@@ -3,6 +3,7 @@
 #include <string.h>
 using namespace std;
 
+int caracter_a_entero(char c);
 bool leer_archivo(char nombre[], ifstream& f);
 bool obtener_numero_valido(char numero_secreto[], ifstream& f);
 void jugar(char numero_secreto[]);
@@ -28,6 +29,10 @@ int main() {
   return 0;
 }
 
+int caracter_a_entero(char c) {
+  return c - '0';
+}
+
 bool leer_archivo(char nombre[], ifstream &f) {
   f.open(nombre);
   return f.fail() ? false : true;
@@ -43,7 +48,7 @@ bool validar_diferentes(char num[], int longitud_num) {
   int suma_diferentes = 0;
 
   for (int i = 0; i < longitud_num; i++) {
-    num_actual = num[i] - '0';
+    num_actual = caracter_a_entero(num[i]);
     digito[num_actual] = 1;
   }
 
@@ -95,7 +100,7 @@ bool obtener_numero_valido(char numero_secreto[], ifstream &f) {
 void identificar_digitos(char numero_secreto[], int digitos[], int longitud_num) {
   int digito_actual;
   for (int i = 0; i < longitud_num; i++) {
-    digito_actual = numero_secreto[i] - '0';
+    digito_actual = caracter_a_entero(numero_secreto[i]);
     digitos[digito_actual] = 1;
   }
 }
@@ -103,7 +108,7 @@ void identificar_digitos(char numero_secreto[], int digitos[], int longitud_num)
 void mostrar_adivinados(char numero_secreto[], int adivinados[], int longitud_num) {
   int digito_actual;
   for (int i = 0; i < longitud_num; i++) {
-    digito_actual = numero_secreto[i] - '0';
+    digito_actual = caracter_a_entero(numero_secreto[i]);
     (adivinados[digito_actual] == 1) ? cout << digito_actual << "  " : cout << '_' << "  ";
   }
 }
