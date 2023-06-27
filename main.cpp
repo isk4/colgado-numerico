@@ -3,33 +3,32 @@
 #include <string.h>
 using namespace std;
 
-bool leer_archivo(char nombre[15], ifstream& f);
-bool obtener_numero_valido(char numero_secreto[21], ifstream& f);
+bool leer_archivo(char nombre[], ifstream& f);
+bool obtener_numero_valido(char numero_secreto[], ifstream& f);
+void jugar(char numero_secreto[]);
 
-int main()
-{
+int main() {
   char nombre_archivo[15];
   char numero_secreto[21];
   bool archivo_valido, numero_valido;
   ifstream archivo;
 
   do {
-    cout << "Ingresa el nombre del archivo con números o un punto para salir: \n";
+    cout << "Ingresa el nombre del archivo con números o un punto para salir: ";
     cin >> nombre_archivo;
     if (nombre_archivo[0] == '.') return 0;
   } while (leer_archivo(nombre_archivo, archivo) == false);
 
-  do {
-    numero_valido = obtener_numero_valido(numero_secreto, archivo);
-
-  } while (numero_valido);
+  while (obtener_numero_valido(numero_secreto, archivo)) {
+    jugar(numero_secreto);
+  }
 
   archivo.close();
   cout << "No quedan más números válidos en el archivo.\n";
   return 0;
 }
 
-bool leer_archivo(char nombre[15], ifstream &f) {
+bool leer_archivo(char nombre[], ifstream &f) {
   f.open(nombre);
   return f.fail() ? false : true;
 }
@@ -38,7 +37,7 @@ bool validar_longitud(int longitud) {
   return (longitud < 10 || longitud > 20) ? false : true;
 }
 
-bool validar_diferentes(char num[21], int longitud_num) {
+bool validar_diferentes(char num[], int longitud_num) {
   int digito[10] = { 0 };
   int num_actual;
   int suma_diferentes = 0;
@@ -55,16 +54,30 @@ bool validar_diferentes(char num[21], int longitud_num) {
   return (suma_diferentes > 3) ? true : false;
 }
 
-bool numero_valido(char num[21]) {
+bool validar_no_consecutivos(char num[], int longitud_num) {
+  for (int i = 0; i <= longitud_num - 4; i++) {
+    if (
+      num[i] == num[i + 1] &&
+      num[i + 1] == num[i + 2] &&
+      num[i + 2] == num[i + 3]
+    ) return false;
+  }
+  return true;
+}
+
+bool numero_valido(char num[]) {
   int cuenta_digitos = strlen(num);
 
-  if (!validar_longitud(cuenta_digitos)) return false;
-  if (!validar_diferentes(num, cuenta_digitos)) return false;
+  if (
+    !validar_longitud(cuenta_digitos) ||
+    !validar_no_consecutivos(num, cuenta_digitos) ||
+    !validar_diferentes(num, cuenta_digitos)
+  ) return false;
 
   return true;
 }
 
-bool obtener_numero_valido(char numero_secreto[21], ifstream &f) {
+bool obtener_numero_valido(char numero_secreto[], ifstream &f) {
   char c;
   while (!f.eof()) {
     f.get(numero_secreto, 22, '\n');
@@ -77,4 +90,37 @@ bool obtener_numero_valido(char numero_secreto[21], ifstream &f) {
 
   }
   return false;
+}
+
+void identificar_digitos(char numero_secreto[], int digitos[], int longitud_num) {
+  int digito_actual;
+  for (int i = 0; i < longitud_num; i++) {
+    digito_actual = numero_secreto[i] - '0';
+    digitos[digito_actual] = 1;
+  }
+}
+
+void mostrar_adivinados(char numero_secreto[], int adivinados[], int longitud_num) {
+  int digito_actual;
+  for (int i = 0; i < longitud_num; i++) {
+    digito_actual = numero_secreto[i] - '0';
+    (adivinados[digito_actual] == 1) ? cout << digito_actual << "  " : cout << '_' << "  ";
+  }
+}
+
+void jugar(char numero_secreto[]) {
+  int longitud_num = strlen(numero_secreto);
+  int intentos = 5;
+  int digitos[10] = { 0 };
+  int adivinados[10] = { 0 };
+  int numero_ingresado;
+
+  identificar_digitos(numero_secreto, digitos, longitud_num);
+  while (true) {
+    cout << "\nIngresa un numero: ";
+    cin >> numero_ingresado;
+
+    adivinados[numero_ingresado] = 1;
+    mostrar_adivinados(numero_secreto, adivinados, longitud_num);
+  }
 }
