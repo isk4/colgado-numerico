@@ -48,20 +48,17 @@ int main() {
   return 0;
 }
 
-
-
-
 int caracter_a_entero(char c) {
   return c - '0';
 }
 
 bool leer_archivo(char nombre[], ifstream &f) {
   f.open(nombre);
-  return f.fail() ? false : true;
+  return !f.fail();
 }
 
 bool validar_longitud(int longitud) {
-  return (longitud < 10 || longitud > 20) ? false : true;
+  return !(longitud < 10 || longitud > 20);
 }
 
 bool validar_diferentes(char num[], int longitud_num) {
@@ -78,7 +75,7 @@ bool validar_diferentes(char num[], int longitud_num) {
     suma_diferentes += digito[i];
   }
 
-  return (suma_diferentes > 3) ? true : false;
+  return suma_diferentes > 3;
 }
 
 bool validar_no_consecutivos(char num[], int longitud_num) {
@@ -105,19 +102,15 @@ bool numero_valido(char num[]) {
 }
 
 bool obtener_numero_valido(char numero_secreto[], ifstream &f) {
-  char c;
-  while (!f.eof()) {
-    f.get(numero_secreto, 22, '\n');
-    do (f.get(c)); while (c != '\n'&& !f.eof());
+  while (f >> numero_secreto) {
+  // while (!f.eof()) {
+    // f.get(numero_secreto, 22, '\n');
+    // do f.get(c); while (c != '\n'&& !f.eof());
 
-    if (numero_valido(numero_secreto)) {
-      cout << numero_secreto << endl;
-      return true;
-    }
+    if (numero_valido(numero_secreto)) return true;
   }
   return false;
 }
-
 
 void imprimir_numero(int numero, int linea) {
   switch(numero) {
@@ -242,52 +235,54 @@ int obtener_por_adivinar(char numero_secreto[], int adivinados[], int longitud_n
 void obtener_pistas(int numero, char mensaje[]) {
   switch(numero) {
     case 0: {
-      strcat(mensaje, "- Te falta el 0\n");
+      strcat(mensaje, "\t- Te falta el 0\n");
       break;
     }
     case 1: {
-      strcat(mensaje, "- Te falta el 1\n");
+      strcat(mensaje, "\t- Te falta el 1\n");
       break;
     }
     case 2: {
-      strcat(mensaje, "- Te falta el 2\n");
+      strcat(mensaje, "\t- Te falta el 2\n");
       break;
     }
     case 3: {
-      strcat(mensaje, "- Te falta el 3\n");
+      strcat(mensaje, "\t- Te falta el 3\n");
       break;
     }
     case 4: {
-      strcat(mensaje, "- Te falta el 4\n");
+      strcat(mensaje, "\t- Te falta el 4\n");
       break;
     }
     case 5: {
-      strcat(mensaje, "- Te falta el 5\n");
+      strcat(mensaje, "\t- Te falta el 5\n");
       break;
     }
     case 6: {
-      strcat(mensaje, "- Te falta el 6\n");
+      strcat(mensaje, "\t- Te falta el 6\n");
       break;
     }
     case 7: {
-      strcat(mensaje, "- Te falta el 7\n");
+      strcat(mensaje, "\t- Te falta el 7\n");
       break;
     }
     case 8: {
-      strcat(mensaje, "- Te falta el 8\n");
+      strcat(mensaje, "\t- Te falta el 8\n");
       break;
     }
     case 9: {
-      strcat(mensaje, "- Te falta el 9\n");
+      strcat(mensaje, "\t- Te falta el 9\n");
       break;
     }
   }
 }
 
 
-void mostrar_pistas(char numero_secreto[], int adivinados[], int longitud_num, char mensaje[]) {
+void mostrar_pistas(char numero_secreto[], int adivinados[], int longitud_num) {
   int digito_actual;
   int primos, pares, impares, cuadrados;
+  char mensaje[256] = "";
+
   primos = pares = impares = 0;
   for (int i = 0; i < 10; i++) {
     for (int j = 0; j < longitud_num; j++) {
@@ -305,41 +300,46 @@ void mostrar_pistas(char numero_secreto[], int adivinados[], int longitud_num, c
   cout << mensaje;
 }
 
+void imprimir_juego(char numero_secreto[], int adivinados[], int longitud_num, int intentos) {
+  limpiar_pantalla();
+  imprimir_lineas(6);
+
+  cout << "\t\t\tAdivina el número de " << longitud_num << " dígitos\n";
+  cout << "\t\t\tTienes " << intentos << " intentos\n";
+
+  imprimir_lineas(2);    
+  mostrar_adivinados(numero_secreto, adivinados, longitud_num);
+
+  imprimir_lineas(3);
+  mostrar_pistas(numero_secreto, adivinados, longitud_num);
+  cout << endl;
+}
+
 void jugar(char numero_secreto[]) {
   int numero_ingresado, por_adivinar;
   int longitud_num = por_adivinar = strlen(numero_secreto);
   int intentos = 5;
   int adivinados[10] = { 0 };
-  char mensaje_pistas[256] = "";
 
   while (intentos != 0 && por_adivinar != 0) {
-    limpiar_pantalla();
-    imprimir_lineas(6);
+    imprimir_juego(numero_secreto, adivinados, longitud_num, intentos);
 
-    cout << "\t\t\tAdivina el número de " << longitud_num << " dígitos\n";
-    cout << "\t\t\tTienes " << intentos << " intentos\n";
-
-    imprimir_lineas(2);    
-    mostrar_adivinados(numero_secreto, adivinados, longitud_num);
-    cout << "\t\t\tNúmeros por adivinar: " << por_adivinar << endl;
-
-    imprimir_lineas(3);
-    mostrar_pistas(numero_secreto, adivinados, longitud_num, mensaje_pistas);
     cout << "\n\t\t\tIngresa un número: ";
     cin >> numero_ingresado;
-
-
     adivinados[numero_ingresado] = 1;
+
     por_adivinar = obtener_por_adivinar(numero_secreto, adivinados, longitud_num);
     intentos--;
   }
 
-  limpiar_pantalla();
-  imprimir_lineas(6);
+  imprimir_juego(numero_secreto, adivinados, longitud_num, intentos);
+  imprimir_lineas(3);
   if (por_adivinar == 0) {
-    cout << "¡\t\t\tFelicidades, ganaste!\n";
+    cout << "\t\t\t\t\t¡Felicidades, ganaste!\n";
   } else {
-    cout << "\t\t\tPerdiste. El número era: " << numero_secreto << endl;
+    cout << "\t\t\tPerdiste. El número era: ";
+    for (int i = 0; i < longitud_num; i++) cout << numero_secreto[i] << " ";
+    cout << endl;
   }
-  imprimir_lineas(6);
+  imprimir_lineas(3);
 }
