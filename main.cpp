@@ -309,25 +309,25 @@ void obtener_pista(char mensaje[], infoPistas info) {
   char submensaje[30];
   switch (opcion) {
     case 0:
-      sprintf(submensaje, "\t- Pares: %f\n", info.pares);
+      sprintf(submensaje, "\t- Pares: %i\n", info.pares);
       break;
     case 1:
-      sprintf(submensaje, "\t- Primos: %f\n", info.primos);
+      sprintf(submensaje, "\t- Primos: %i\n", info.primos);
       break;
     case 2:
-      sprintf(submensaje, "\t- Cuadrados: %f\n", info.cuadrados);
+      sprintf(submensaje, "\t- Cuadrados: %i\n", info.cuadrados);
       break;
     case 3:
-      sprintf(submensaje, "\t- Multiplo 3: %f\n", info.multiplo_3);
+      sprintf(submensaje, "\t- Multiplo 3: %i\n", info.multiplo_3);
       break;
     case 4:
-      sprintf(submensaje, "\t- Multiplo 4: %f\n", info.multiplo_4);
+      sprintf(submensaje, "\t- Multiplo 4: %i\n", info.multiplo_4);
       break;
     case 5:
-      sprintf(submensaje, "\t- Mayor o igual a 5: %f\n", info.mayor_5);
+      sprintf(submensaje, "\t- Mayor o igual a 5: %i\n", info.mayor_5);
       break;
     case 6:
-      sprintf(submensaje, "\t- Fibonaccis: %f\n", info.fibonaccis);
+      sprintf(submensaje, "\t- Fibonaccis: %i\n", info.fibonaccis);
       break;
   }
   strncat(mensaje, submensaje, 256);
