@@ -14,6 +14,16 @@ bool validar_longitud(int longitud);
 int caracter_a_entero(char c);
 void mostrar_adivinados(char numero_secreto[], int adivinados[], int longitud_num);
 int obtener_por_adivinar(char numero_secreto[], int adivinados[], int longitud_num);
+struct infoPistas {
+  int primos = 0;
+  int pares = 0;
+  int cuadrados = 0;
+  int multiplo_3 = 0;
+  int multiplo_4 = 0;
+  int mayor_5 = 0;
+  int fibonaccis = 0;
+};
+
 
 int main() {
   char nombre_archivo[15], numero_secreto[21];
@@ -232,75 +242,117 @@ int obtener_por_adivinar(char numero_secreto[], int adivinados[], int longitud_n
   return por_adivinar;
 }
 
-void obtener_pistas(int numero, char mensaje[]) {
+void procesar_info_pistas(int numero, infoPistas& info) {
   switch(numero) {
     case 0: {
-      strcat(mensaje, "\t- Te falta el 0\n");
+      info.pares++;
       break;
     }
     case 1: {
-      strcat(mensaje, "\t- Te falta el 1\n");
+      info.cuadrados++;
+      info.fibonaccis++;
       break;
     }
     case 2: {
-      strcat(mensaje, "\t- Te falta el 2\n");
+      info.pares++;
+      info.primos++;
+      info.fibonaccis++;
       break;
     }
     case 3: {
-      strcat(mensaje, "\t- Te falta el 3\n");
+      info.primos++;
+      info.multiplo_3++;
+      info.fibonaccis++;
       break;
     }
     case 4: {
-      strcat(mensaje, "\t- Te falta el 4\n");
+      info.cuadrados++;      
+      info.pares++;
+      info.multiplo_4++;
       break;
     }
     case 5: {
-      strcat(mensaje, "\t- Te falta el 5\n");
+      info.primos++;
+      info.fibonaccis++;
+      info.mayor_5++;
       break;
     }
     case 6: {
-      strcat(mensaje, "\t- Te falta el 6\n");
+      info.pares++;
+      info.multiplo_3++;
+      info.mayor_5++;
       break;
     }
     case 7: {
-      strcat(mensaje, "\t- Te falta el 7\n");
+      info.primos++;
+      info.mayor_5++;
       break;
     }
     case 8: {
-      strcat(mensaje, "\t- Te falta el 8\n");
+      info.pares++;
+      info.fibonaccis++;
+      info.mayor_5++;
       break;
     }
     case 9: {
-      strcat(mensaje, "\t- Te falta el 9\n");
+      info.cuadrados++;
+      info.multiplo_3++;
+      info.mayor_5++;
       break;
     }
   }
 }
 
+void obtener_pista(char mensaje[], infoPistas info) {
+  srand((unsigned) time(NULL));
+  int opcion = rand() % 8;
+  char submensaje[30];
+  switch (opcion) {
+    case 0:
+      sprintf(submensaje, "\t- Pares: %f\n", info.pares);
+      break;
+    case 1:
+      sprintf(submensaje, "\t- Primos: %f\n", info.primos);
+      break;
+    case 2:
+      sprintf(submensaje, "\t- Cuadrados: %f\n", info.cuadrados);
+      break;
+    case 3:
+      sprintf(submensaje, "\t- Multiplo 3: %f\n", info.multiplo_3);
+      break;
+    case 4:
+      sprintf(submensaje, "\t- Multiplo 4: %f\n", info.multiplo_4);
+      break;
+    case 5:
+      sprintf(submensaje, "\t- Mayor o igual a 5: %f\n", info.mayor_5);
+      break;
+    case 6:
+      sprintf(submensaje, "\t- Fibonaccis: %f\n", info.fibonaccis);
+      break;
+  }
+  strncat(mensaje, submensaje, 256);
+}
 
-void mostrar_pistas(char numero_secreto[], int adivinados[], int longitud_num) {
+
+void mostrar_pistas(char numero_secreto[], int adivinados[], int longitud_num, char mensaje_pistas[]) {
   int digito_actual;
-  int primos, pares, impares, cuadrados;
-  char mensaje[256] = "";
+  infoPistas info;
 
-  primos = pares = impares = 0;
   for (int i = 0; i < 10; i++) {
     for (int j = 0; j < longitud_num; j++) {
       digito_actual = caracter_a_entero(numero_secreto[j]);
       if (adivinados[i] == 0 && i == digito_actual) {
-
-        obtener_pistas(digito_actual, mensaje);
-
-
-
+        procesar_info_pistas(digito_actual, info);
         break;
       }
     }
   }
-  cout << mensaje;
+
+  obtener_pista(mensaje_pistas, info);
+  cout << mensaje_pistas;
 }
 
-void imprimir_juego(char numero_secreto[], int adivinados[], int longitud_num, int intentos) {
+void imprimir_juego(char numero_secreto[], int adivinados[], int longitud_num, int intentos, char mensaje_pistas[]) {
   limpiar_pantalla();
   imprimir_lineas(6);
 
@@ -311,28 +363,31 @@ void imprimir_juego(char numero_secreto[], int adivinados[], int longitud_num, i
   mostrar_adivinados(numero_secreto, adivinados, longitud_num);
 
   imprimir_lineas(3);
-  mostrar_pistas(numero_secreto, adivinados, longitud_num);
+  mostrar_pistas(numero_secreto, adivinados, longitud_num, mensaje_pistas);
   cout << endl;
 }
 
 void jugar(char numero_secreto[]) {
-  int numero_ingresado, por_adivinar;
+  int numero_ingresado, por_adivinar, previo_por_adivinar;
   int longitud_num = por_adivinar = strlen(numero_secreto);
   int intentos = 5;
   int adivinados[10] = { 0 };
+  char mensaje_pistas[256] = "";
 
   while (intentos != 0 && por_adivinar != 0) {
-    imprimir_juego(numero_secreto, adivinados, longitud_num, intentos);
+    imprimir_juego(numero_secreto, adivinados, longitud_num, intentos, mensaje_pistas);
 
     cout << "\n\t\t\tIngresa un número: ";
     cin >> numero_ingresado;
     adivinados[numero_ingresado] = 1;
 
+    previo_por_adivinar = por_adivinar;
     por_adivinar = obtener_por_adivinar(numero_secreto, adivinados, longitud_num);
-    intentos--;
+
+    if (previo_por_adivinar == por_adivinar) intentos--;
   }
 
-  imprimir_juego(numero_secreto, adivinados, longitud_num, intentos);
+  imprimir_juego(numero_secreto, adivinados, longitud_num, intentos, mensaje_pistas);
   imprimir_lineas(3);
   if (por_adivinar == 0) {
     cout << "\t\t\t\t\t¡Felicidades, ganaste!\n";
