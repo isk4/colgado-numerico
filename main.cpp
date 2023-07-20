@@ -46,7 +46,7 @@ int main() {
     cin >> opcion;
 
     if (opcion == 'n') {
-     cout << "Gracias por jugar.\n";
+     cout << "\nGracias por jugar.\n";
      exit(0); 
     }
   }
@@ -55,6 +55,7 @@ int main() {
 
   imprimir_lineas(2);
   cout << "Lo sentimos. No quedan más números válidos en el archivo.\n";
+  cout << "\nGracias por jugar.\n";
   return 0;
 }
 
@@ -291,6 +292,7 @@ void procesar_info_pistas(int numero, infoPistas& info) {
     case 8: {
       info.pares++;
       info.fibonaccis++;
+      info.multiplo_4++;
       info.mayor_5++;
       break;
     }
@@ -304,33 +306,71 @@ void procesar_info_pistas(int numero, infoPistas& info) {
 }
 
 void mensaje_pistas(bool pistas_activas[], infoPistas info) {
+  cout << "\t =================================================================\n";
+  cout << "\t|| Pistas:                                                       ||\n";
   for (int i = 0; i < 10; i++) {
     if (pistas_activas[i]) {
       switch (i) {
         case 0:
-          cout << "\t- Pares: " << info.pares << endl;
+          if (info.pares == 0)
+            cout << "\t||  - No quedan pares por adivinar\t\t\t\t ||\n";
+          else if (info.pares == 1)
+            cout << "\t||  - Te queda 1 par por adivinar\t\t\t\t ||\n";
+          else
+            cout << "\t||  - Te quedan " << info.pares << " pares por adivinar\t\t\t\t ||\n";
           break;
         case 1:
-          cout << "\t- Primos: " << info.primos << endl;
+          if (info.cuadrados == 0)
+            cout << "\t||  - No quedan cuadrados por adivinar\t\t\t\t ||\n";
+          else if (info.cuadrados == 1)
+            cout << "\t||  - Te queda 1 cuadrado por adivinar\t\t\t\t ||\n";
+          else
+            cout << "\t||  - Te quedan " << info.cuadrados << " cuadrados por adivinar\t\t\t ||\n";
           break;
         case 2:
-          cout << "\t- Cuadrados: " << info.cuadrados << endl;
+          if (info.primos == 0)
+            cout << "\t||  - No quedan primos por adivinar\t\t\t\t ||\n";
+          else if (info.primos == 1)
+            cout << "\t||  - Te queda 1 primo por adivinar\t\t\t\t ||\n";
+          else
+            cout << "\t||  - Te quedan " << info.primos << " primos por adivinar\t\t\t\t ||\n";
           break;
         case 3:
-          cout << "\t- Multiplo 3: " << info.multiplo_3 << endl;
+          if (info.multiplo_3 == 0)
+            cout << "\t||  - No quedan múltiplos de 3 por adivinar\t\t\t ||\n";
+          else if (info.multiplo_3 == 1)
+            cout << "\t||  - Te queda 1 múltiplo de 3 por adivinar\t\t\t ||\n";
+          else
+            cout << "\t||  - Te quedan " << info.multiplo_3 << " múltiplos de 3 por adivinar\t\t\t ||\n";
           break;
         case 4:
-          cout << "\t- Multiplo 4: " << info.multiplo_4 << endl;
+          if (info.multiplo_4 == 0)
+            cout << "\t||  - No quedan múltiplos de 4 por adivinar\t\t\t ||\n";
+          else if (info.multiplo_4 == 1)
+            cout << "\t||  - Te queda 1 múltiplo de 4 por adivinar\t\t\t ||\n";
+          else
+            cout << "\t||  - Te quedan " << info.multiplo_4 << " múltiplos de 4 por adivinar\t\t\t ||\n";
           break;
         case 5:
-          cout << "\t- Mayor o igual a 5: " << info.mayor_5 << endl;
+          if (info.mayor_5 == 0)
+            cout << "\t||  - No quedan mayores o iguales a 5 por adivinar\t\t ||\n";
+          else if (info.mayor_5 == 1)
+            cout << "\t||  - Te queda 1 mayor o igual a 5 por adivinar\t\t\t ||\n";
+          else
+            cout << "\t||  - Te quedan " << info.mayor_5 << " mayores o iguales a 5 por adivinar\t\t ||\n";
           break;
         case 6:
-          cout << "\t- Fibonaccis: " << info.fibonaccis << endl;
+          if (info.fibonaccis == 0)
+            cout << "\t||  - No quedan números de la secuencia Fibonacci por adivinar   ||\n";
+          else if (info.fibonaccis == 1)
+            cout << "\t||  - Te queda 1 número de la secuencia Fibonacci por adivinar   ||\n";
+          else
+            cout << "\t||  - Te quedan " << info.fibonaccis << " números de la secuencia Fibonacci por adivinar ||\n";
           break;
       }
     }
   }
+  cout << "\t ================================================================\n";
 }
 
 void activar_nueva_pista(bool pistas_activas[]) {
@@ -355,7 +395,6 @@ void mostrar_pistas(char numero_secreto[], int adivinados[], int longitud_num, b
     }
   }
 
-  activar_nueva_pista(pistas_activas);
   mensaje_pistas(pistas_activas, info);
 }
 
@@ -370,7 +409,7 @@ void imprimir_juego(char numero_secreto[], int adivinados[], int longitud_num, i
   mostrar_adivinados(numero_secreto, adivinados, longitud_num);
 
   imprimir_lineas(3);
-  mostrar_pistas(numero_secreto, adivinados, longitud_num, pistas_activas);
+  if (intentos < 3) mostrar_pistas(numero_secreto, adivinados, longitud_num, pistas_activas);
   cout << endl;
 }
 
@@ -382,6 +421,7 @@ void jugar(char numero_secreto[]) {
   bool pistas_activas[10] = { 0 };
 
   while (intentos != 0 && por_adivinar != 0) {
+    if (intentos < 3 && intentos != 0) activar_nueva_pista(pistas_activas);
     imprimir_juego(numero_secreto, adivinados, longitud_num, intentos, pistas_activas);
 
     cout << "\n\t\t\tIngresa un número: ";
