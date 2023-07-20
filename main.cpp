@@ -37,7 +37,7 @@ int main() {
     cout << "\t\tIngresa el nombre del archivo con números o un punto para salir: ";
     cin >> nombre_archivo;
     if (nombre_archivo[0] == '.') return 0;
-  } while (leer_archivo(nombre_archivo, archivo) == false);
+  } while (!leer_archivo(nombre_archivo, archivo));
 
   while (obtener_numero_valido(numero_secreto, archivo)) {
     jugar(numero_secreto);
@@ -398,6 +398,15 @@ void mostrar_pistas(char numero_secreto[], int adivinados[], int longitud_num, b
   mensaje_pistas(pistas_activas, info);
 }
 
+bool ingreso_valido(char numero_ingresado[]) {
+  if (
+    strlen(numero_ingresado) != 1 ||
+    numero_ingresado[0] < '0' ||
+    numero_ingresado[0] > '9'
+  ) return false;
+  return true;
+}
+
 void imprimir_juego(char numero_secreto[], int adivinados[], int longitud_num, int intentos, bool pistas_activas[]) {
   limpiar_pantalla();
   imprimir_lineas(6);
@@ -414,18 +423,28 @@ void imprimir_juego(char numero_secreto[], int adivinados[], int longitud_num, i
 }
 
 void jugar(char numero_secreto[]) {
+  string ingreso_usuario;
   int numero_ingresado, por_adivinar, previo_por_adivinar;
   int longitud_num = por_adivinar = strlen(numero_secreto);
   int intentos = 5;
   int adivinados[10] = { 0 };
   bool pistas_activas[10] = { 0 };
+  bool ingreso_invalido = false;
 
   while (intentos != 0 && por_adivinar != 0) {
     if (intentos < 3 && intentos != 0) activar_nueva_pista(pistas_activas);
     imprimir_juego(numero_secreto, adivinados, longitud_num, intentos, pistas_activas);
 
+    if (ingreso_invalido) cout << "\n\t\t\t¡Debes ingresar SÓLO un número!\n";
     cout << "\n\t\t\tIngresa un número: ";
-    cin >> numero_ingresado;
+    getline(cin, ingreso_usuario);
+    
+    if (!ingreso_valido(ingreso_usuario)) {
+      ingreso_invalido = true;
+      continue;
+    }
+
+    numero_ingresado = caracter_a_entero(ingreso_usuario[0]);
     adivinados[numero_ingresado] = 1;
 
     previo_por_adivinar = por_adivinar;
