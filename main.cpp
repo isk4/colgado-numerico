@@ -4,16 +4,16 @@
 using namespace std;
 
 int caracter_a_entero(char c);
-bool leer_archivo(char nombre[], ifstream& f);
-bool obtener_numero_valido(char numero_secreto[], ifstream& f);
-void jugar(char numero_secreto[]);
+bool leer_archivo(string nombre, ifstream& f);
+bool obtener_numero_valido(string &numero_secreto, ifstream& f);
+void jugar(string numero_secreto);
 void imprimir_lineas(int numero_lineas);
 void limpiar_pantalla();
 void imprimir_numero(int numero, int linea);
 bool validar_longitud(int longitud);
 int caracter_a_entero(char c);
-void mostrar_adivinados(char numero_secreto[], int adivinados[], int longitud_num);
-int obtener_por_adivinar(char numero_secreto[], int adivinados[], int longitud_num);
+void mostrar_adivinados(string numero_secreto, int adivinados[], int longitud_num);
+int obtener_por_adivinar(string numero_secreto, int adivinados[], int longitud_num);
 struct infoPistas {
   int primos = 0;
   int pares = 0;
@@ -26,8 +26,8 @@ struct infoPistas {
 
 
 int main() {
-  char nombre_archivo[15], numero_secreto[21];
-  char opcion;
+  string nombre_archivo, numero_secreto;
+  string opcion;
   bool archivo_valido, numero_valido;
   ifstream archivo;
 
@@ -35,17 +35,18 @@ int main() {
     limpiar_pantalla();
     imprimir_lineas(10);
     cout << "\t\tIngresa el nombre del archivo con números o un punto para salir: ";
-    cin >> nombre_archivo;
-    if (nombre_archivo[0] == '.') return 0;
+    getline(cin, nombre_archivo);
+
+    if (nombre_archivo[0] == '.' && nombre_archivo.length() == 1) return 0;
   } while (!leer_archivo(nombre_archivo, archivo));
 
   while (obtener_numero_valido(numero_secreto, archivo)) {
     jugar(numero_secreto);
 
-    cout << "¿Deseas seguir jugando? (s/n): ";
-    cin >> opcion;
+    cout << "¿Deseas seguir jugando? (n para salir): ";
+    getline(cin, opcion);
 
-    if (opcion == 'n') {
+    if (opcion[0] == 'n' && opcion.length() == 1) {
      cout << "\nGracias por jugar.\n";
      exit(0); 
     }
@@ -63,7 +64,7 @@ int caracter_a_entero(char c) {
   return c - '0';
 }
 
-bool leer_archivo(char nombre[], ifstream &f) {
+bool leer_archivo(string nombre, ifstream &f) {
   f.open(nombre);
   return !f.fail();
 }
@@ -72,7 +73,7 @@ bool validar_longitud(int longitud) {
   return !(longitud < 10 || longitud > 20);
 }
 
-bool validar_diferentes(char num[], int longitud_num) {
+bool validar_diferentes(string num, int longitud_num) {
   int digito[10] = { 0 };
   int num_actual;
   int suma_diferentes = 0;
@@ -89,7 +90,7 @@ bool validar_diferentes(char num[], int longitud_num) {
   return suma_diferentes > 3;
 }
 
-bool validar_no_consecutivos(char num[], int longitud_num) {
+bool validar_no_consecutivos(string num, int longitud_num) {
   for (int i = 0; i <= longitud_num - 4; i++) {
     if (
       num[i] == num[i + 1] &&
@@ -100,8 +101,8 @@ bool validar_no_consecutivos(char num[], int longitud_num) {
   return true;
 }
 
-bool numero_valido(char num[]) {
-  int cuenta_digitos = strlen(num);
+bool numero_valido(string num) {
+  int cuenta_digitos = num.length();
 
   if (
     !validar_longitud(cuenta_digitos) ||
@@ -112,12 +113,8 @@ bool numero_valido(char num[]) {
   return true;
 }
 
-bool obtener_numero_valido(char numero_secreto[], ifstream &f) {
-  while (f >> numero_secreto) {
-  // while (!f.eof()) {
-    // f.get(numero_secreto, 22, '\n');
-    // do f.get(c); while (c != '\n'&& !f.eof());
-
+bool obtener_numero_valido(string &numero_secreto, ifstream &f) {
+  while (getline(f, numero_secreto)) {
     if (numero_valido(numero_secreto)) return true;
   }
   return false;
@@ -206,7 +203,7 @@ void imprimir_numero(int numero, int linea) {
   }
 }
 
-void mostrar_adivinados(char numero_secreto[], int adivinados[], int longitud_num) {
+void mostrar_adivinados(string numero_secreto, int adivinados[], int longitud_num) {
   int digito_actual;
   for (int linea = 0; linea < 4; linea++) {
     cout << "\t\t\t";
@@ -233,7 +230,7 @@ void imprimir_lineas(int numero_lineas) {
   for (int i = 0; i < numero_lineas; i++) cout << endl;
 }
 
-int obtener_por_adivinar(char numero_secreto[], int adivinados[], int longitud_num) {
+int obtener_por_adivinar(string numero_secreto, int adivinados[], int longitud_num) {
   int por_adivinar = 0;
   int digito_actual;
   for (int i = 0; i < longitud_num; i++) {
@@ -375,13 +372,13 @@ void mensaje_pistas(bool pistas_activas[], infoPistas info) {
 
 void activar_nueva_pista(bool pistas_activas[]) {
   srand((unsigned) time(NULL));
-  int opcion = rand() % 8;
-  while (pistas_activas[opcion]) opcion = rand() % 8;
+  int opcion = rand() % 7;
+  while (pistas_activas[opcion]) opcion = rand() % 7;
   pistas_activas[opcion] = true;
 }
 
 
-void mostrar_pistas(char numero_secreto[], int adivinados[], int longitud_num, bool pistas_activas[]) {
+void mostrar_pistas(string numero_secreto, int adivinados[], int longitud_num, bool pistas_activas[]) {
   int digito_actual;
   infoPistas info;
 
@@ -398,16 +395,16 @@ void mostrar_pistas(char numero_secreto[], int adivinados[], int longitud_num, b
   mensaje_pistas(pistas_activas, info);
 }
 
-bool ingreso_valido(char numero_ingresado[]) {
+bool entrada_invalida(string numero_ingresado) {
   if (
-    strlen(numero_ingresado) != 1 ||
+    numero_ingresado.length() != 1 ||
     numero_ingresado[0] < '0' ||
     numero_ingresado[0] > '9'
-  ) return false;
-  return true;
+  ) return true;
+  return false;
 }
 
-void imprimir_juego(char numero_secreto[], int adivinados[], int longitud_num, int intentos, bool pistas_activas[]) {
+void imprimir_juego(string numero_secreto, int adivinados[], int longitud_num, int intentos, bool pistas_activas[]) {
   limpiar_pantalla();
   imprimir_lineas(6);
 
@@ -422,35 +419,35 @@ void imprimir_juego(char numero_secreto[], int adivinados[], int longitud_num, i
   cout << endl;
 }
 
-void jugar(char numero_secreto[]) {
-  string ingreso_usuario;
+void jugar(string numero_secreto) {
+  string entrada_usuario;
+  bool error_entrada = false;
   int numero_ingresado, por_adivinar, previo_por_adivinar;
-  int longitud_num = por_adivinar = strlen(numero_secreto);
+  int longitud_num = por_adivinar = numero_secreto.length();
   int intentos = 5;
   int adivinados[10] = { 0 };
   bool pistas_activas[10] = { 0 };
-  bool ingreso_invalido = false;
 
   while (intentos != 0 && por_adivinar != 0) {
     if (intentos < 3 && intentos != 0) activar_nueva_pista(pistas_activas);
     imprimir_juego(numero_secreto, adivinados, longitud_num, intentos, pistas_activas);
 
-    if (ingreso_invalido) cout << "\n\t\t\t¡Debes ingresar SÓLO un número!\n";
+    if (error_entrada) cout << "\n\t\t\t\t¡Debes ingresar SÓLO un número!\n";
     cout << "\n\t\t\tIngresa un número: ";
-    getline(cin, ingreso_usuario);
+    getline(cin, entrada_usuario);
     
-    if (!ingreso_valido(ingreso_usuario)) {
-      ingreso_invalido = true;
-      continue;
+    if (entrada_invalida(entrada_usuario)) {
+      error_entrada = true;
+    } else {
+      error_entrada = false;
+      numero_ingresado = caracter_a_entero(entrada_usuario[0]);
+      adivinados[numero_ingresado] = 1;
+
+      previo_por_adivinar = por_adivinar;
+      por_adivinar = obtener_por_adivinar(numero_secreto, adivinados, longitud_num);
+
+      if (previo_por_adivinar == por_adivinar) intentos--;
     }
-
-    numero_ingresado = caracter_a_entero(ingreso_usuario[0]);
-    adivinados[numero_ingresado] = 1;
-
-    previo_por_adivinar = por_adivinar;
-    por_adivinar = obtener_por_adivinar(numero_secreto, adivinados, longitud_num);
-
-    if (previo_por_adivinar == por_adivinar) intentos--;
   }
 
   imprimir_juego(numero_secreto, adivinados, longitud_num, intentos, pistas_activas);
