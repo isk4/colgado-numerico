@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <string.h>
 using namespace std;
 
 int caracter_a_entero(char c);
@@ -43,10 +42,10 @@ int main() {
   while (obtener_numero_valido(numero_secreto, archivo)) {
     jugar(numero_secreto);
 
-    cout << "¿Deseas seguir jugando? (n para salir): ";
+    cout << "¿Deseas seguir jugando? (N para salir/cualquier otro caracter para continuar): ";
     getline(cin, opcion);
 
-    if (opcion[0] == 'n' && opcion.length() == 1) {
+    if ((opcion[0] == 'n' || opcion[0] == 'N') && opcion.length() == 1) {
      cout << "\nGracias por jugar.\n";
      exit(0); 
     }
@@ -223,7 +222,7 @@ void mostrar_adivinados(string numero_secreto, int adivinados[], int longitud_nu
 }
 
 void limpiar_pantalla() {
-  cout<< u8"\033[2J\033[1;1H";
+  cout << u8"\033[2J\033[1;1H";
 }
 
 void imprimir_lineas(int numero_lineas) {
@@ -409,8 +408,10 @@ void imprimir_juego(string numero_secreto, int adivinados[], int longitud_num, i
   imprimir_lineas(6);
 
   cout << "\t\t\tAdivina el número de " << longitud_num << " dígitos\n";
-  cout << "\t\t\tTienes " << intentos << " intentos\n";
-
+  cout << "\t\t\tVidas: ";
+  for (int i = 0; i < intentos; i++) cout << "❤️ ";
+  cout << endl;
+  
   imprimir_lineas(2);    
   mostrar_adivinados(numero_secreto, adivinados, longitud_num);
 
@@ -429,10 +430,11 @@ void jugar(string numero_secreto) {
   bool pistas_activas[10] = { 0 };
 
   while (intentos != 0 && por_adivinar != 0) {
-    if (intentos < 3 && intentos != 0) activar_nueva_pista(pistas_activas);
+    if (intentos < 3 && intentos != 0 && !error_entrada) activar_nueva_pista(pistas_activas);
     imprimir_juego(numero_secreto, adivinados, longitud_num, intentos, pistas_activas);
 
-    if (error_entrada) cout << "\n\t\t\t\t¡Debes ingresar SÓLO un número!\n";
+    if (error_entrada) cout << "\n\t\t\t\t¡¡¡Debes ingresar SÓLO un número!!!\n";
+    if (intentos == 1) cout << "\n\t\t\t\t\t¡¡¡Último intento!!!\n";
     cout << "\n\t\t\tIngresa un número: ";
     getline(cin, entrada_usuario);
     
@@ -453,9 +455,9 @@ void jugar(string numero_secreto) {
   imprimir_juego(numero_secreto, adivinados, longitud_num, intentos, pistas_activas);
   imprimir_lineas(3);
   if (por_adivinar == 0) {
-    cout << "\t\t\t\t\t¡Felicidades, ganaste!\n";
+    cout << "\t\t\t\t✨ ¡¡¡Felicitationes, ganaste!!! 🎉🥳\n";
   } else {
-    cout << "\t\t\tPerdiste. El número era: ";
+    cout << "\t\t\tPerdiste 😔. El número era: ";
     for (int i = 0; i < longitud_num; i++) cout << numero_secreto[i] << " ";
     cout << endl;
   }
