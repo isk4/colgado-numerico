@@ -2,23 +2,41 @@
 #include <fstream>
 using namespace std;
 
+// Función que limpia la pantalla
 void limpiar_pantalla();
+// Función que imprime un número de saltos de línea
 void imprimir_lineas(int numero_lineas);
+// Función que convierte un caracter a entero
 int caracter_a_entero(char c);
+// Función que lee un archivo
 bool leer_archivo(string nombre, ifstream& f);
+// Función que obtiene un número válido de un archivo
 bool obtener_numero_valido(string &numero_secreto, ifstream& f);
+// Función que comprueba si un número es válido llamando a distintas funciones de validación
 bool numero_valido(string num);
+// Función para validar la longitud de un número
 bool validar_longitud(int longitud);
+// Función que valida que un número tenga al menos 4 dígitos diferentes
 bool validar_diferentes(string num, int longitud_num);
+// Función que valida que un mismo dígito no se encuentre 4 o más veces de forma consecutiva en un número
 bool validar_no_consecutivos(string num, int longitud_num);
+// Función que encapsula la lógica del juego
 void jugar(string numero_secreto);
+// Función que activa una nueva pista aleatoriamente
 void activar_nueva_pista(bool pistas_activas[]);
+// Función que detecta una entrada inválida de parte del usuario
 bool entrada_invalida(string numero_ingresado);
+// Función que imprime la parte principal del juego
 void imprimir_juego(string numero_secreto, int adivinados[], int longitud_num, int vidas, bool pistas_activas[]);
+// Función que calcula la cantidad de dígitos que faltan por adivinar
 int obtener_por_adivinar(string numero_secreto, int adivinados[], int longitud_num);
+// Función que administra la lógica de la impresión de los dígitos adivinados
 void mostrar_adivinados(string numero_secreto, int adivinados[], int longitud_num);
+// Función que imprime los números propiamente tales
 void imprimir_numero(int numero, int linea);
+// Función que imprime las pistas
 void mostrar_pistas(string numero_secreto, int adivinados[], int longitud_num, bool pistas_activas[]);
+// Tipo de dato agregado utilizado para mostrar pistas pertinentes
 struct infoPistas {
   int primos = 0;
   int pares = 0;
@@ -28,13 +46,19 @@ struct infoPistas {
   int mayor_5 = 0;
   int fibonaccis = 0;
 };
+// Función que procesa la información de las pistas operando sobre el tipo de dato agregado anterior
 void procesar_info_pistas(int numero, infoPistas& info);
+// Función que muestra las pistas en pantalla
 void mensaje_pistas(bool pistas_activas[], infoPistas info);
 
+// Función principal
 int main() {
-  string nombre_archivo, numero_secreto;
-  string opcion;
+  // Nombre del archivo con números, variable donde se guardará cada número encontrado
+  // y opción para seguir o no jugando
+  string nombre_archivo, numero_secreto, opcion;
+  // Variables que indican si un archivo y un número son válidos
   bool archivo_valido, numero_valido;
+  // Archivo con números
   ifstream archivo;
 
   do {
@@ -91,6 +115,7 @@ bool obtener_numero_valido(string &numero_secreto, ifstream &f) {
 }
 
 bool numero_valido(string num) {
+  // Cantidad de dígitos del número secreto
   int cuenta_digitos = num.length();
   if (
     !validar_longitud(cuenta_digitos) ||
@@ -106,8 +131,11 @@ bool validar_longitud(int longitud) {
 }
 
 bool validar_diferentes(string num, int longitud_num) {
+  // Arreglo que indica si un dígito ya fue encontrado
   int digito[10] = { 0 };
+  // Dígito actual
   int num_actual;
+  // Cantidad de dígitos diferentes
   int suma_diferentes = 0;
 
   for (int i = 0; i < longitud_num; i++) {
@@ -134,19 +162,26 @@ bool validar_no_consecutivos(string num, int longitud_num) {
 }
 
 void jugar(string numero_secreto) {
+  // Entrada por consola del usuario
   string entrada_usuario;
+  // Indicador de error de entrada del usuario
   bool error_entrada = false;
+  // Número ingresado por el usuario y cantidad de números por adivinar (actual y previamente)
   int numero_ingresado, por_adivinar, previo_por_adivinar;
+  // Longitud del número secreto
   int longitud_num = por_adivinar = numero_secreto.length();
+  // Cantidad de vidas restantes
   int vidas = 5;
+  // Arreglo que indica si un dígito ya fue adivinado/ingresado
   int adivinados[10] = { 0 };
+  // Arreglo que maneja las pistas activas
   bool pistas_activas[10] = { 0 };
 
   while (vidas != 0 && por_adivinar != 0) {
     if (vidas < 3 && vidas != 0 && !error_entrada) activar_nueva_pista(pistas_activas);
     imprimir_juego(numero_secreto, adivinados, longitud_num, vidas, pistas_activas);
 
-    if (error_entrada) cout << "\n\t\t\t\t¡¡¡Debes ingresar SÓLO un número!!!\n";
+    if (error_entrada) cout << "\n\t\t\t\tInfo: Debes ingresar SÓLO un número\n";
     if (vidas == 1) cout << "\n\t\t\t\t\t¡¡¡Última vida!!!\n";
     cout << "\n\t\t\tIngresa un número: ";
     getline(cin, entrada_usuario);
@@ -178,7 +213,9 @@ void jugar(string numero_secreto) {
 }
 
 void activar_nueva_pista(bool pistas_activas[]) {
+  // Inicialización de obtención de números al azar
   srand((unsigned) time(NULL));
+  // Opción de pista al azar entre 0 y 6
   int opcion = rand() % 7;
   while (pistas_activas[opcion]) opcion = rand() % 7;
   pistas_activas[opcion] = true;
@@ -212,7 +249,9 @@ void imprimir_juego(string numero_secreto, int adivinados[], int longitud_num, i
 }
 
 int obtener_por_adivinar(string numero_secreto, int adivinados[], int longitud_num) {
+  // Cantidad de números por adivinar
   int por_adivinar = 0;
+  // Dígito actual a procesar
   int digito_actual;
   for (int i = 0; i < longitud_num; i++) {
     digito_actual = caracter_a_entero(numero_secreto[i]);
@@ -222,7 +261,9 @@ int obtener_por_adivinar(string numero_secreto, int adivinados[], int longitud_n
 }
 
 void mostrar_adivinados(string numero_secreto, int adivinados[], int longitud_num) {
+  // Dígito procesado actualmente
   int digito_actual;
+
   for (int linea = 0; linea < 4; linea++) {
     cout << "\t\t\t";
 
@@ -324,7 +365,9 @@ void imprimir_numero(int numero, int linea) {
 }
 
 void mostrar_pistas(string numero_secreto, int adivinados[], int longitud_num, bool pistas_activas[]) {
+  // Dígito procesado actualmente
   int digito_actual;
+  // Tipo de dato agregado que contiene la información de las pistas
   infoPistas info;
 
   for (int i = 0; i < 10; i++) {
