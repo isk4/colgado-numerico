@@ -61,6 +61,9 @@ struct infoPistas {
   int multiplo_4 = 0;
   int mayor_5 = 0;
   int fibonaccis = 0;
+  int oblongos = 0;
+  int pi = 0;
+  int e = 0;
 };
 // Función que procesa la información de las pistas operando sobre el tipo de dato agregado anterior
 void procesar_info_pistas(int numero, infoPistas& info);
@@ -231,9 +234,9 @@ void jugar(string numero_secreto) {
 void activar_nueva_pista(bool pistas_activas[]) {
   // Inicialización de obtención de números al azar
   srand((unsigned) time(NULL));
-  // Opción de pista al azar entre 0 y 6
-  int opcion = rand() % 7;
-  while (pistas_activas[opcion]) opcion = rand() % 7;
+  // Opción de pista al azar entre 0 y 9
+  int opcion = rand() % 10;
+  while (pistas_activas[opcion]) opcion = rand() % 10;
   pistas_activas[opcion] = true;
 }
 
@@ -402,18 +405,24 @@ void mostrar_pistas(string numero_secreto, int adivinados[], int longitud_num, b
 void procesar_info_pistas(int numero, infoPistas& info) {
   switch(numero) {
     case 0: {
+      info.cuadrados++;
       info.pares++;
+      info.oblongos++;
       break;
     }
     case 1: {
       info.cuadrados++;
       info.fibonaccis++;
+      info.e++;
+      info.pi++;
       break;
     }
     case 2: {
       info.pares++;
       info.primos++;
       info.fibonaccis++;
+      info.oblongos++;
+      info.e++;
       break;
     }
     case 3: {
@@ -426,23 +435,27 @@ void procesar_info_pistas(int numero, infoPistas& info) {
       info.cuadrados++;      
       info.pares++;
       info.multiplo_4++;
+      info.pi++;
       break;
     }
     case 5: {
       info.primos++;
       info.fibonaccis++;
       info.mayor_5++;
+      info.pi++;
       break;
     }
     case 6: {
       info.pares++;
       info.multiplo_3++;
       info.mayor_5++;
+      info.oblongos++;
       break;
     }
     case 7: {
       info.primos++;
       info.mayor_5++;
+      info.e++;
       break;
     }
     case 8: {
@@ -450,6 +463,7 @@ void procesar_info_pistas(int numero, infoPistas& info) {
       info.fibonaccis++;
       info.multiplo_4++;
       info.mayor_5++;
+      info.e++;
       break;
     }
     case 9: {
@@ -522,6 +536,30 @@ void mensaje_pistas(bool pistas_activas[], infoPistas info) {
             cout << "\t||  - Te queda 1 número de la secuencia Fibonacci por adivinar   ||\n";
           else
             cout << "\t||  - Te quedan " << info.fibonaccis << " números de la secuencia Fibonacci por adivinar ||\n";
+          break;
+        case 7:
+          if (info.oblongos == 0)
+            cout << "\t||  - No quedan números oblongos por adivinar\t\t\t ||\n";
+          else if (info.oblongos == 1)
+            cout << "\t||  - Te queda 1 número oblongo por adivinar\t\t\t ||\n";
+          else
+            cout << "\t||  - Te quedan " << info.oblongos << " números oblongos por adivinar\t\t\t ||\n";
+          break;
+        case 8:
+          if (info.pi == 0)
+            cout << "\t||  - No quedan de los 4 primeros decimales de pi por adivinar   ||\n";
+          else if (info.pi == 1)
+            cout << "\t||  - Te queda 1 de los primeros 4 decimales de pi por adivinar  ||\n";
+          else
+            cout << "\t||  - Te quedan " << info.pi << " de los primeros 4 decimales de pi por adivinar ||\n";
+          break;
+        case 9:
+          if (info.e == 0)
+            cout << "\t||  - No quedan de los 4 primeros decimales de e por adivinar\t ||\n";
+          else if (info.e == 1)
+            cout << "\t||  - Te queda 1 de los primeros 4 decimales de e por adivinar   ||\n";
+          else
+            cout << "\t||  - Te quedan " << info.e << " de los primeros 4 decimales de e por adivinar  ||\n";
           break;
       }
     }
