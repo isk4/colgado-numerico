@@ -1,3 +1,19 @@
+/******************************************************************************
+Trabajo 1: Ahorcado numérico
+Problema: Realizar un juego para adivinar números naturales grandes entre 10 y 20 dígitos. Para ello debe:
+  1. Tener un archivo con números naturales.
+  2. Sacar un número del archivo que:
+    a) Tenga entre 10 y 20 dígitos.
+    b) Tenga al menos 4 dígitos diferentes.
+    c) No contenga un mismo dígito 4 o más veces en forma consecutiva.
+  3. En 5 intentos debe adivinar el número. A partir del tercer intento dar pistas.
+
+Estudiante: Víctor Gutiérrez
+Profesor: Yuri Cáceres
+
+Programa compilado con g++ (Debian 10.2.1-6) 10.2.1 20210110
+*******************************************************************************/
+
 #include <iostream>
 #include <fstream>
 using namespace std;
