@@ -18,6 +18,10 @@ Programa compilado con g++ (Debian 10.2.1-6) 10.2.1 20210110
 #include <fstream>
 using namespace std;
 
+// Cantidad de digitos y pistas de un arreglo
+#define DIGITOS 10
+#define CANT_PISTAS 10
+
 // Función que limpia la pantalla
 void limpiar_pantalla();
 // Función que imprime un número de saltos de línea
@@ -167,7 +171,7 @@ bool validar_longitud(int longitud) {
 
 bool validar_diferentes(string num, int longitud_num) {
   // Arreglo que indica si un dígito ya fue encontrado
-  int digito[10] = { 0 };
+  int digito[DIGITOS] = { 0 };
   // Dígito actual
   int num_actual;
   // Cantidad de dígitos diferentes
@@ -220,9 +224,9 @@ void jugar(string numero_secreto) {
   // Cantidad de vidas restantes
   int vidas = 5;
   // Arreglo que indica si un dígito ya fue adivinado/ingresado
-  int adivinados[10] = { 0 };
+  int adivinados[DIGITOS] = { 0 };
   // Arreglo que maneja las pistas activas
-  bool pistas_activas[10] = { 0 };
+  bool pistas_activas[CANT_PISTAS] = { 0 };
 
   while (vidas != 0 && por_adivinar != 0) {
     if (vidas < 3 && vidas != 0 && !error_entrada) activar_nueva_pista(pistas_activas);
