@@ -26,16 +26,20 @@ void imprimir_lineas(int numero_lineas);
 int caracter_a_entero(char c);
 // Función que lee un archivo
 bool leer_archivo(string nombre, ifstream& f);
-// Función que obtiene un número válido de un archivo
-bool obtener_numero_valido(string &numero_secreto, ifstream& f);
-// Función que comprueba si un número es válido llamando a distintas funciones de validación
-bool numero_valido(string num);
+// Función que crea un archivo temporal
+void crear_archivo_temporal(ifstream &tmp_in, ofstream &tmp_out);
+// Función que guarda un números en un archivo temporal
+void guardar_temporal(string numero_secreto, ofstream &tmp_out);
+// Función que obtiene un número válido de un archivo pasando por distintas validaciones
+bool obtener_numero_valido(string &numero_secreto, ifstream& f, ifstream &tmp_in);
 // Función para validar la longitud de un número
 bool validar_longitud(int longitud);
 // Función que valida que un número tenga al menos 4 dígitos diferentes
 bool validar_diferentes(string num, int longitud_num);
 // Función que valida que un mismo dígito no se encuentre 4 o más veces de forma consecutiva en un número
 bool validar_no_consecutivos(string num, int longitud_num);
+// Función que valida que un número no se encuentre un archivo con los números válidos usados previamente
+bool validar_unicidad(string num, ifstream &tmp_in);
 // Función que encapsula la lógica del juego
 void jugar(string numero_secreto);
 // Función que activa una nueva pista aleatoriamente
@@ -79,6 +83,9 @@ int main() {
   bool archivo_valido, numero_valido;
   // Archivo con números
   ifstream archivo;
+  // Archivo temporal donde se guardarán los números válidos (entrada y salida)
+  ifstream tmp_in;
+  ofstream tmp_out;
 
   do {
     limpiar_pantalla();
@@ -89,23 +96,27 @@ int main() {
     if (nombre_archivo[0] == '.' && nombre_archivo.length() == 1) return 0;
   } while (!leer_archivo(nombre_archivo, archivo));
 
-  while (obtener_numero_valido(numero_secreto, archivo)) {
+  crear_archivo_temporal(tmp_in, tmp_out);
+
+  while (obtener_numero_valido(numero_secreto, archivo, tmp_in)) {
+    guardar_temporal(numero_secreto, tmp_out);
     jugar(numero_secreto);
 
-    cout << "¿Deseas seguir jugando? (N para salir/cualquier otro caracter para continuar): ";
+    cout << "¿Deseas seguir jugando? (n para salir/cualquier otro caracter para continuar): ";
     getline(cin, opcion);
 
-    if ((opcion[0] == 'n' || opcion[0] == 'N') && opcion.length() == 1) {
-     cout << "\nGracias por jugar.\n";
-     exit(0); 
-    }
+    if ((opcion[0] == 'n' || opcion[0] == 'N') && opcion.length() == 1) break;
   }
 
-  archivo.close();
-
   imprimir_lineas(2);
-  cout << "Lo sentimos. No quedan más números válidos en el archivo.\n";
-  cout << "\nGracias por jugar.\n";
+  if (!obtener_numero_valido(numero_secreto, archivo, tmp_in))
+    cout << "Lo sentimos. No quedan más números válidos en el archivo.\n\n";
+  cout << "Gracias por jugar.\n";
+
+  archivo.close();
+  tmp_in.close();
+  tmp_out.close();
+  remove("tmp.txt");
   return 0;
 }
 
@@ -126,23 +137,28 @@ bool leer_archivo(string nombre, ifstream &f) {
   return !f.fail();
 }
 
-bool obtener_numero_valido(string &numero_secreto, ifstream &f) {
-  while (f >> numero_secreto) {
-    if (numero_valido(numero_secreto)) return true;
-  }
-  return false;
+void crear_archivo_temporal(ifstream &tmp_in, ofstream &tmp_out) {
+  tmp_in.open("tmp.txt");
+  tmp_out.open("tmp.txt");
 }
 
-bool numero_valido(string num) {
-  // Cantidad de dígitos del número secreto
-  int cuenta_digitos = num.length();
-  if (
-    !validar_longitud(cuenta_digitos) ||
-    !validar_no_consecutivos(num, cuenta_digitos) ||
-    !validar_diferentes(num, cuenta_digitos)
-  ) return false;
+void guardar_temporal(string numero_secreto, ofstream &tmp_out) {
+  tmp_out << numero_secreto << endl;
+}
 
-  return true;
+bool obtener_numero_valido(string &numero_secreto, ifstream &f, ifstream &tmp_in) {
+  // Cantidad de dígitos del número secreto
+  int cuenta_digitos;
+  if (f >> numero_secreto) {
+    cuenta_digitos = numero_secreto.length();
+    if (
+      validar_longitud(cuenta_digitos) &&
+      validar_no_consecutivos(numero_secreto, cuenta_digitos) &&
+      validar_diferentes(numero_secreto, cuenta_digitos) &&
+      validar_unicidad(numero_secreto, tmp_in)
+    ) return true;
+  }
+  return false;
 }
 
 bool validar_longitud(int longitud) {
@@ -176,6 +192,18 @@ bool validar_no_consecutivos(string num, int longitud_num) {
       num[i + 1] == num[i + 2] &&
       num[i + 2] == num[i + 3]
     ) return false;
+  }
+  return true;
+}
+
+bool validar_unicidad(string num, ifstream &tmp_in) {
+  // Número actual del archivo temporal
+  string tmp_num;
+
+  tmp_in.clear();
+  tmp_in.seekg(0, ios::beg);
+  while (tmp_in >> tmp_num) {
+    if (num == tmp_num) return false;
   }
   return true;
 }
