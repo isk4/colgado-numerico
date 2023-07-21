@@ -403,20 +403,20 @@ bool entrada_invalida(string numero_ingresado) {
   return false;
 }
 
-void imprimir_juego(string numero_secreto, int adivinados[], int longitud_num, int intentos, bool pistas_activas[]) {
+void imprimir_juego(string numero_secreto, int adivinados[], int longitud_num, int vidas, bool pistas_activas[]) {
   limpiar_pantalla();
   imprimir_lineas(6);
 
   cout << "\t\t\tAdivina el número de " << longitud_num << " dígitos\n";
   cout << "\t\t\tVidas: ";
-  for (int i = 0; i < intentos; i++) cout << "❤️ ";
+  for (int i = 0; i < vidas; i++) cout << "❤️ ";
   cout << endl;
   
   imprimir_lineas(2);    
   mostrar_adivinados(numero_secreto, adivinados, longitud_num);
 
   imprimir_lineas(3);
-  if (intentos < 3) mostrar_pistas(numero_secreto, adivinados, longitud_num, pistas_activas);
+  if (vidas < 3) mostrar_pistas(numero_secreto, adivinados, longitud_num, pistas_activas);
   cout << endl;
 }
 
@@ -425,16 +425,16 @@ void jugar(string numero_secreto) {
   bool error_entrada = false;
   int numero_ingresado, por_adivinar, previo_por_adivinar;
   int longitud_num = por_adivinar = numero_secreto.length();
-  int intentos = 5;
+  int vidas = 5;
   int adivinados[10] = { 0 };
   bool pistas_activas[10] = { 0 };
 
-  while (intentos != 0 && por_adivinar != 0) {
-    if (intentos < 3 && intentos != 0 && !error_entrada) activar_nueva_pista(pistas_activas);
-    imprimir_juego(numero_secreto, adivinados, longitud_num, intentos, pistas_activas);
+  while (vidas != 0 && por_adivinar != 0) {
+    if (vidas < 3 && vidas != 0 && !error_entrada) activar_nueva_pista(pistas_activas);
+    imprimir_juego(numero_secreto, adivinados, longitud_num, vidas, pistas_activas);
 
     if (error_entrada) cout << "\n\t\t\t\t¡¡¡Debes ingresar SÓLO un número!!!\n";
-    if (intentos == 1) cout << "\n\t\t\t\t\t¡¡¡Último intento!!!\n";
+    if (vidas == 1) cout << "\n\t\t\t\t\t¡¡¡Última vida!!!\n";
     cout << "\n\t\t\tIngresa un número: ";
     getline(cin, entrada_usuario);
     
@@ -448,11 +448,11 @@ void jugar(string numero_secreto) {
       previo_por_adivinar = por_adivinar;
       por_adivinar = obtener_por_adivinar(numero_secreto, adivinados, longitud_num);
 
-      if (previo_por_adivinar == por_adivinar) intentos--;
+      if (previo_por_adivinar == por_adivinar) vidas--;
     }
   }
 
-  imprimir_juego(numero_secreto, adivinados, longitud_num, intentos, pistas_activas);
+  imprimir_juego(numero_secreto, adivinados, longitud_num, vidas, pistas_activas);
   imprimir_lineas(3);
   if (por_adivinar == 0) {
     cout << "\t\t\t\t✨ ¡¡¡Felicitationes, ganaste!!! 🎉🥳\n";
