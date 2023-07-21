@@ -127,7 +127,7 @@ bool leer_archivo(string nombre, ifstream &f) {
 }
 
 bool obtener_numero_valido(string &numero_secreto, ifstream &f) {
-  while (getline(f, numero_secreto)) {
+  while (f >> numero_secreto) {
     if (numero_valido(numero_secreto)) return true;
   }
   return false;
