@@ -232,12 +232,19 @@ void jugar(string numero_secreto) {
 }
 
 void activar_nueva_pista(bool pistas_activas[]) {
-  // Inicialización de obtención de números al azar
-  srand((unsigned) time(NULL));
   // Opción de pista al azar entre 0 y 9
-  int opcion = rand() % 10;
-  while (pistas_activas[opcion]) opcion = rand() % 10;
-  pistas_activas[opcion] = true;
+  int opcion;
+  // Cantidad de pistas activas
+  int cuenta_pistas_activas = 0;
+
+  for (int i = 0; i < 10; i++) if (pistas_activas[i]) cuenta_pistas_activas++;
+  if (cuenta_pistas_activas != 10) {
+    // Inicialización de obtención de números al azar
+    srand((unsigned) time(NULL));
+    opcion = rand() % 10;
+    while (pistas_activas[opcion]) opcion = rand() % 10;
+    pistas_activas[opcion] = true;
+  }
 }
 
 bool entrada_invalida(string numero_ingresado) {
@@ -547,7 +554,7 @@ void mensaje_pistas(bool pistas_activas[], infoPistas info) {
           break;
         case 8:
           if (info.pi == 0)
-            cout << "\t||  - No quedan de los 4 primeros decimales de pi por adivinar   ||\n";
+            cout << "\t||  - No quedan de los primeros 4 decimales de pi por adivinar   ||\n";
           else if (info.pi == 1)
             cout << "\t||  - Te queda 1 de los primeros 4 decimales de pi por adivinar  ||\n";
           else
@@ -555,7 +562,7 @@ void mensaje_pistas(bool pistas_activas[], infoPistas info) {
           break;
         case 9:
           if (info.e == 0)
-            cout << "\t||  - No quedan de los 4 primeros decimales de e por adivinar\t ||\n";
+            cout << "\t||  - No quedan de los primeros 4 decimales de e por adivinar\t ||\n";
           else if (info.e == 1)
             cout << "\t||  - Te queda 1 de los primeros 4 decimales de e por adivinar   ||\n";
           else
