@@ -2,23 +2,22 @@
 #include <fstream>
 using namespace std;
 
+void limpiar_pantalla();
+void imprimir_lineas(int numero_lineas);
 int caracter_a_entero(char c);
 bool leer_archivo(string nombre, ifstream& f);
 bool obtener_numero_valido(string &numero_secreto, ifstream& f);
-void jugar(string numero_secreto);
-void imprimir_lineas(int numero_lineas);
-void limpiar_pantalla();
-void imprimir_numero(int numero, int linea);
-bool validar_longitud(int longitud);
-int caracter_a_entero(char c);
-void mostrar_adivinados(string numero_secreto, int adivinados[], int longitud_num);
-int obtener_por_adivinar(string numero_secreto, int adivinados[], int longitud_num);
 bool numero_valido(string num);
-bool validar_no_consecutivos(string num, int longitud_num);
+bool validar_longitud(int longitud);
 bool validar_diferentes(string num, int longitud_num);
+bool validar_no_consecutivos(string num, int longitud_num);
+void jugar(string numero_secreto);
 void activar_nueva_pista(bool pistas_activas[]);
-void imprimir_juego(string numero_secreto, int adivinados[], int longitud_num, int vidas, bool pistas_activas[]);
 bool entrada_invalida(string numero_ingresado);
+void imprimir_juego(string numero_secreto, int adivinados[], int longitud_num, int vidas, bool pistas_activas[]);
+int obtener_por_adivinar(string numero_secreto, int adivinados[], int longitud_num);
+void mostrar_adivinados(string numero_secreto, int adivinados[], int longitud_num);
+void imprimir_numero(int numero, int linea);
 void mostrar_pistas(string numero_secreto, int adivinados[], int longitud_num, bool pistas_activas[]);
 struct infoPistas {
   int primos = 0;
